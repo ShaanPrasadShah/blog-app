@@ -103,6 +103,16 @@ blogRouter.get('/:id',async (c) => {
 	const blog = await prisma.post.findUnique({
 		where : {
 			id:c.req.param('id'),
+		},
+		select:{
+			id:true,
+			title:true,
+			content:true,
+			author:{
+				select:{
+					name:true
+				}
+			}
 		}
 	})
 	return c.json({blog})
@@ -112,7 +122,18 @@ blogRouter.get('/',async (c) => {
 		datasourceUrl:c.env?.DATABASE_URL,
 	}).$extends(withAccelerate());
 
-	const blog = await prisma.post.findMany({})
+	const blog = await prisma.post.findMany({
+		select:{
+			title:true,
+			content:true,
+			id:true,
+			author:{
+				select:{
+					name:true
+				}
+			}
+		}
+	})
 	if(!blog){
 		return c.text("no posts");
 	}
